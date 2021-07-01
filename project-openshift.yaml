@@ -1,0 +1,347 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/scc: anyuid
+    creationTimestamp: 2021-07-01T11:33:48Z
+    generateName: jenkins-deployment-5fd8788957-
+    labels:
+      app: jenkins
+      pod-template-hash: "1984344513"
+    name: jenkins-deployment-5fd8788957-9slgx
+    namespace: jenkins-ci
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: jenkins-deployment-5fd8788957
+      uid: 3381390a-da60-11eb-b85f-080027bd5e3e
+    resourceVersion: "832003"
+    selfLink: /api/v1/namespaces/jenkins-ci/pods/jenkins-deployment-5fd8788957-9slgx
+    uid: 338f81f3-da60-11eb-b85f-080027bd5e3e
+  spec:
+    containers:
+    - image: jenkins/jenkins:lts
+      imagePullPolicy: IfNotPresent
+      name: jenkins
+      ports:
+      - containerPort: 8080
+        name: http-port
+        protocol: TCP
+      - containerPort: 50000
+        name: jnlp-port
+        protocol: TCP
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi
+        requests:
+          cpu: "1"
+          memory: 500Mi
+      securityContext:
+        capabilities:
+          drop:
+          - MKNOD
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/lib/jenkins
+        name: jenkins-vol
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-j265m
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-7hbcc
+    nodeName: localhost
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seLinuxOptions:
+        level: s0:c15,c0
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: jenkins-vol
+      persistentVolumeClaim:
+        claimName: jenkins-pv-claim
+    - name: default-token-j265m
+      secret:
+        defaultMode: 420
+        secretName: default-token-j265m
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: 2021-07-01T11:33:48Z
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: 2021-07-01T11:33:49Z
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: null
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: 2021-07-01T11:33:48Z
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://59de13c7b5ad4b2eea3da7530b4e733fcb973cc38aceb67b8af86906f33fd775
+      image: docker.io/jenkins/jenkins:lts
+      imageID: docker-pullable://docker.io/jenkins/jenkins@sha256:99fd3cb74257d1df7678c19106586a2da127cd1b08484c9201c7130d4fab92c1
+      lastState: {}
+      name: jenkins
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: 2021-07-01T11:33:49Z
+    hostIP: 10.0.2.15
+    phase: Running
+    podIP: 172.17.0.12
+    qosClass: Burstable
+    startTime: 2021-07-01T11:33:48Z
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2021-07-01T11:33:48Z
+    name: jenkins
+    namespace: jenkins-ci
+    resourceVersion: "831971"
+    selfLink: /api/v1/namespaces/jenkins-ci/services/jenkins
+    uid: 3381449d-da60-11eb-b85f-080027bd5e3e
+  spec:
+    clusterIP: 172.30.173.224
+    externalTrafficPolicy: Cluster
+    ports:
+    - nodePort: 31927
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: jenkins
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2021-07-01T11:33:48Z
+    name: jenkins-jnlp
+    namespace: jenkins-ci
+    resourceVersion: "831975"
+    selfLink: /api/v1/namespaces/jenkins-ci/services/jenkins-jnlp
+    uid: 33844a1f-da60-11eb-b85f-080027bd5e3e
+  spec:
+    clusterIP: 172.30.169.44
+    ports:
+    - port: 50000
+      protocol: TCP
+      targetPort: 50000
+    selector:
+      app: jenkins
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: 2021-07-01T11:33:48Z
+    generation: 1
+    name: jenkins-deployment
+    namespace: jenkins-ci
+    resourceVersion: "832007"
+    selfLink: /apis/apps/v1/namespaces/jenkins-ci/deployments/jenkins-deployment
+    uid: 337fb38c-da60-11eb-b85f-080027bd5e3e
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: jenkins
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: jenkins
+      spec:
+        containers:
+        - image: jenkins/jenkins:lts
+          imagePullPolicy: IfNotPresent
+          name: jenkins
+          ports:
+          - containerPort: 8080
+            name: http-port
+            protocol: TCP
+          - containerPort: 50000
+            name: jnlp-port
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: "1"
+              memory: 500Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/jenkins
+            name: jenkins-vol
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: jenkins-vol
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: 2021-07-01T11:33:49Z
+      lastUpdateTime: 2021-07-01T11:33:49Z
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: 2021-07-01T11:33:48Z
+      lastUpdateTime: 2021-07-01T11:33:49Z
+      message: ReplicaSet "jenkins-deployment-5fd8788957" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: 2021-07-01T11:33:48Z
+    generation: 1
+    labels:
+      app: jenkins
+      pod-template-hash: "1984344513"
+    name: jenkins-deployment-5fd8788957
+    namespace: jenkins-ci
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: jenkins-deployment
+      uid: 337fb38c-da60-11eb-b85f-080027bd5e3e
+    resourceVersion: "832004"
+    selfLink: /apis/apps/v1/namespaces/jenkins-ci/replicasets/jenkins-deployment-5fd8788957
+    uid: 3381390a-da60-11eb-b85f-080027bd5e3e
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: jenkins
+        pod-template-hash: "1984344513"
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: jenkins
+          pod-template-hash: "1984344513"
+      spec:
+        containers:
+        - image: jenkins/jenkins:lts
+          imagePullPolicy: IfNotPresent
+          name: jenkins
+          ports:
+          - containerPort: 8080
+            name: http-port
+            protocol: TCP
+          - containerPort: 50000
+            name: jnlp-port
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: "1"
+              memory: 500Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/jenkins
+            name: jenkins-vol
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: jenkins-vol
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: 2021-07-01T11:35:47Z
+    name: jenkins
+    namespace: jenkins-ci
+    resourceVersion: "832483"
+    selfLink: /apis/route.openshift.io/v1/namespaces/jenkins-ci/routes/jenkins
+    uid: 7a8db565-da60-11eb-a704-080027bd5e3e
+  spec:
+    host: jenkins-jenkins-ci.192.168.99.103.nip.io
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: jenkins
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2021-07-01T11:35:47Z
+        status: "True"
+        type: Admitted
+      host: jenkins-jenkins-ci.192.168.99.103.nip.io
+      routerName: router
+      wildcardPolicy: None
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
